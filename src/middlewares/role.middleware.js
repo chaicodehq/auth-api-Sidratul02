@@ -14,6 +14,21 @@
  */
 export function requireRole(...roles) {
   return (req, res, next) => {
-    // Your code here
+// 1. Check if user is authenticated
+    if (!req.user) {
+      return res.status(401).json({
+        error: { message: "Not authenticated" }
+      });
+    }
+
+    // 2. Check if user's role is allowed
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        error: { message: "Forbidden" }
+      });
+    }
+
+    // 3. Allow access
+    next();
   };
 }

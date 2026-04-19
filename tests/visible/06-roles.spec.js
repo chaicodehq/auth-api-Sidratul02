@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { createApp } from '../../src/app.js';
-import { User } from '../../src/models/user.model.js';
+import  User  from '../../src/models/user.model.js';
 import { setupDb, teardownDb, resetDb } from '../__helpers__/setupTestDb.js';
 
 describe('Test 6: Role-Based Authorization', () => {

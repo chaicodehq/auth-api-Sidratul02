@@ -17,5 +17,26 @@ import { notFound } from './middlewares/notFound.middleware.js';
  * 8. Return app
  */
 export function createApp() {
-  // Your code here
-}
+// 1. Create app
+  const app = express();
+
+  // 2. Middleware
+  app.use(express.json());
+
+  // 3. Health check
+  app.get('/health', (req, res) => {
+    res.status(200).json({ ok: true });
+  });
+
+  // 4. Routes
+  app.use('/api/auth', authRoutes);
+  app.use('/api/users', userRoutes);
+
+  // 5. 404 handler
+  app.use(notFound);
+
+  // 6. Error handler (MUST be last)
+  app.use(errorHandler);
+
+  // 7. Return app
+  return app;}

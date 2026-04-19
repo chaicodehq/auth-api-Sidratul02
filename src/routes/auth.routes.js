@@ -12,6 +12,13 @@ import { authenticate } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
-// Your routes here
+// Register (no auth)
+router.post('/register', register);
+
+// Login (no auth)
+router.post('/login', login);
+
+// Get current user (protected)
+router.get('/me', authenticate, me);
 
 export default router;

@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { User } from '../models/user.model.js';
+import  User  from '../models/user.model.js';
 import { signToken } from '../utils/jwt.js';
 
 /**
@@ -13,7 +13,22 @@ import { signToken } from '../utils/jwt.js';
  */
 export async function register(req, res, next) {
   try {
-    // Your code here
+    const { name, email, password } = req.body;
+
+    // Check if user with email already exists
+     const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({
+        error: { message: "Email already exists" }
+      });
+    }
+
+    // Create user (password hashed via pre-save hook)
+    const user = await User.create({ name, email, password });
+    user.password = undefined;
+
+    res.status(201).json({ user });
+
   } catch (error) {
     next(error);
   }
@@ -32,11 +47,46 @@ export async function register(req, res, next) {
  */
 export async function login(req, res, next) {
   try {
-    // Your code here
+    const { email, password } = req.body;
+
+    // Get user with password
+    const user = await User.findOne({ email }).select('+password');
+
+    if (!user) {
+      return res.status(401).json({
+        error: { message: "Invalid credentials" }
+      });
+    }
+
+    // Compare passwords
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        error: { message: "Invalid credentials" }
+      });
+    }
+
+    // Generate token
+    const token = signToken({
+      userId: user._id,
+      email: user.email,
+      role: user.role
+    });
+
+    // Remove password before sending response
+    user.password = undefined;
+
+    res.status(200).json({
+      token,
+      user
+    });
+
   } catch (error) {
     next(error);
   }
 }
+
 
 /**
  * TODO: Get current user
@@ -46,7 +96,9 @@ export async function login(req, res, next) {
  */
 export async function me(req, res, next) {
   try {
-    // Your code here
+    res.status(200).json({
+      user: req.user
+    });
   } catch (error) {
     next(error);
   }

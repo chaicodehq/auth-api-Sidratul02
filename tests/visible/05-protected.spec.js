@@ -1,7 +1,7 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { createApp } from '../../src/app.js';
-import { User } from '../../src/models/user.model.js';
+import  User  from '../../src/models/user.model.js';
 import { setupDb, teardownDb, resetDb } from '../__helpers__/setupTestDb.js';
 
 describe('Test 5: Protected Routes & Auth Middleware', () => {
